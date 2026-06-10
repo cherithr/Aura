@@ -1,0 +1,138 @@
+export type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'review' | 'done';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'critical';
+export type ProjectStatus = 'planning' | 'active' | 'on_hold' | 'completed' | 'archived';
+export type IntegrationType = 'github' | 'slack' | 'figma' | 'jira' | 'linear' | 'vercel' | 'notion';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  role: 'admin' | 'member' | 'viewer';
+  status: 'online' | 'away' | 'offline';
+  currentActivity?: string;
+  lastSeen?: Date;
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: TaskPriority;
+  projectId: string;
+  assigneeId?: string;
+  assignee?: User;
+  labels: string[];
+  dueDate?: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  completedAt?: Date;
+  estimatedHours?: number;
+  actualHours?: number;
+  dependencies: string[];
+  integrations: TaskIntegration[];
+}
+
+export interface TaskIntegration {
+  type: IntegrationType;
+  externalId: string;
+  url: string;
+  title: string;
+  status?: string;
+  lastUpdated: Date;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  status: ProjectStatus;
+  progress: number;
+  startDate: Date;
+  endDate?: Date;
+  team: string[];
+  tasks: string[];
+  milestones: Milestone[];
+  labels: string[];
+  velocity: number;
+  riskScore: number;
+  completionProbability: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Milestone {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: Date;
+  completed: boolean;
+  projectId: string;
+}
+
+export interface TelemetryEvent {
+  id: string;
+  type: 'github' | 'slack' | 'figma' | 'deployment' | 'jira' | 'linear' | 'system';
+  action: string;
+  description: string;
+  timestamp: Date;
+  impact: 'low' | 'medium' | 'high';
+  relatedTaskId?: string;
+  relatedProjectId?: string;
+  metadata?: Record<string, unknown>;
+  automated?: boolean;
+}
+
+export interface Insight {
+  id: string;
+  type: 'prediction' | 'risk' | 'opportunity' | 'achievement' | 'recommendation';
+  title: string;
+  description: string;
+  confidence: number;
+  projectId?: string;
+  relatedTasks?: string[];
+  createdAt: Date;
+  expiresAt: Date;
+  actionRequired?: boolean;
+}
+
+export interface GraphNode {
+  id: string;
+  type: 'task' | 'github_pr' | 'github_issue' | 'slack_thread' | 'figma_file' | 'documentation' | 'deployment';
+  title: string;
+  url?: string;
+  status?: string;
+  x: number;
+  y: number;
+  connections: string[];
+  metadata?: Record<string, unknown>;
+}
+
+export interface GraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: 'depends_on' | 'related_to' | 'blocks' | 'references';
+}
+
+export interface CollaboratorState {
+  userId: string;
+  user: User;
+  cursor?: { x: number; y: number };
+  isEditing: boolean;
+  editingContext?: string;
+  lastActivity: Date;
+}
+
+export interface Command {
+  id: string;
+  title: string;
+  description?: string;
+  shortcut?: string;
+  icon: string;
+  action: () => void;
+  category: 'navigation' | 'create' | 'search' | 'action';
+}
+
+export type ViewMode = 'dashboard' | 'kanban' | 'timeline' | 'context-graph' | 'telemetry' | 'team' | 'settings';
